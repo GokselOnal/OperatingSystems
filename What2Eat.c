@@ -18,7 +18,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-    GitHUb link:  https://github.com/GokselOnal/OperatingSystems
+    GitHub link:  https://github.com/GokselOnal/OperatingSystems
 */
 
 #include <stdio.h>
