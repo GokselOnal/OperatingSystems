@@ -21,9 +21,9 @@
     GitHUb link:  https://github.com/GokselOnal/OperatingSystems
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define numberOfFoods 5
 
@@ -44,37 +44,52 @@ int main(){
     foodPoints[3] = 0; //Pasta
     foodPoints[4] = 0; //Salad
 
-    int givenPoints[numberOfFoods] = {0,0,0,0,0};
-    printf("\nFoods: %s, %s, %s, %s, %s\n",menu[0],menu[1],menu[2],menu[3],menu[4]);
-    printf("Threshold: %d\n\n",threshold);
-    for(int i = 0; i < numberOfPeople; i++){
-        printf("*Person %d,",i + 1);
-        printf(" Give your points(1 - 5) to foods\n");
+    int prefFoodsIndx[numberOfFoods] = {0,0,0,0,0};
+    for(int i = 0; i < numberOfPeople; i++){    
+        printf("\n*Person %d,",i + 1);
+        printf(" Make your preferences to foods\nWrite name of foods according to your preference\n\n");
+        printf("Foods: %s, %s, %s, %s, %s\n",menu[0],menu[1],menu[2],menu[3],menu[4]);
+        printf("Threshold: %d\n\n",threshold);
         for(int j = 0; j < numberOfFoods; j++){
-            printf("%s: ",menu[j]);
-            int point = 0;
-            scanf("%d:",&point);
-            if(point > 5 || point < 1){
-                printf("Invalid point!!\nYou can only use points(1 - 5)\nTry again\n");
+            printf("%d: ",j+1);
+            char foodName[15];
+            scanf("%s",foodName);
+            int indx2 = 0;
+            int indx1 = 0;
+            for(int q = 0; q < numberOfFoods; q++){
+                const char *menuFoodName = menu[q];
+                if(strcmp(menuFoodName,foodName) == 0){
+                    indx2++;
+                    indx1 = q;
+                }
+            }
+            if(indx2 == 0){// not found
+                printf("Invalid entry!\nTry again\nYou are only allowed to write ('%s', '%s', '%s', '%s', '%s')\n",menu[0],menu[1],menu[2],menu[3],menu[4]);
                 j--;
             }
             else{
-                if(givenPoints[point -1] == 0){
-                    foodPoints[j] += point;
-                    givenPoints[point - 1] = 1;
-                }else{
-                    printf("You can not give a point more than once..\nTry again\n");
+                if(prefFoodsIndx[indx1] == 0){
+                    for(int k = 0; k < numberOfFoods; k++){
+                        const char *menuFoodName = menu[k];
+                        if(strcmp(menuFoodName,foodName) == 0){
+                            //indx = k;
+                            foodPoints[k] += (numberOfFoods - j);
+                            prefFoodsIndx[k] = 1;
+                        }
+                    }
+                }
+                else{
+                    printf("You are not allowed to write a food more than one times!\n");
                     j--;
                 }
             }
         }
-        for(int i = 0; i < numberOfFoods;i++){
-            givenPoints[i] = 0;
+        for(int p = 0; p < numberOfFoods;p++){
+            prefFoodsIndx[p] = 0;
         }
-        printf("Thanks..\n\n");
+        printf("\nThanks..\n\n");
     } 
-
-
+    
     int count = 0;
     for(int i = 0; i < numberOfFoods; i++){
         if(foodPoints[i] > threshold){
@@ -82,7 +97,7 @@ int main(){
         }
     }
    
-    if(count == 0){
+    if(numberOfPeople > 0 && count == 0){
         printf("You are eating at home/dorm today!\n");
     }
     //If there is only one food which pass the threshold, then the food will be ordered directly
@@ -95,15 +110,15 @@ int main(){
             }
         }
     }
-    else{
-        printf("\n\n");
-        printf("Foods passing the treshold(%d): ",threshold);
+    else if(count > 1){
+        printf("\n");
+        printf("Foods passing the threshold(%d): ",threshold);
         for(int i = 0; i < numberOfFoods; i++){
             if(foodPoints[i] > threshold){
                 printf("%s,point %d  ",menu[i],foodPoints[i]);
             }
         }
-        printf("\n\nSecond Round\n\n");
+        printf("\n\n~~Second Round~~\n\n");
 
       
         char *shortlist[count];
@@ -120,42 +135,65 @@ int main(){
             shortlistPoints[i] = 0;
         }
 
-        printf("Options: ");
-        for(int i = 0 ; i < count; i++){
-            printf("%s  ", shortlist[i]);
-        }
-
+      
         printf("\n");
-        int givenPointsShortlist[count];
+        int prefShortlistIndx[count];
         for(int i = 0; i < count; i++){
-            givenPointsShortlist[i] = 0;
+            prefShortlistIndx[i] = 0;
         }
 
         for(int i = 0 ; i < numberOfPeople; i++){
             printf("*Person %d,",i + 1);
-            printf(" Give your points(1 - %d) to foods\n",count);
+            printf(" Make your preferences to foods\nWrite name of foods according to your preference\n\n");
+            printf("Options: ");
+            printf("%s",shortlist[0]);
+            for(int i = 1 ; i < count; i++){
+                printf(", %s ", shortlist[i]);
+            }
+            printf("\n\n");
             for(int j = 0; j < count; j++){
-                printf("%s: ",shortlist[j]);
-                int point = 0;
-                scanf("%d:",&point);
-                if(point > count || point < 1){
-                    printf("Invalid point!!\nYou can only use points(1 - %d)\nTry again\n",count);
+                printf("%d: ",j+1);
+                char foodName[15];
+                scanf("%s",foodName);
+                int indx2 = 0;
+                int indx1 = 0;
+                for(int q = 0; q < count; q++){
+                    const char *shortlistFoodName = shortlist[q];
+                    if(strcmp(shortlistFoodName,foodName) == 0){
+                        indx2++;
+                        indx1 = q;
+                    }
+                }
+
+                if(indx2 == 0){
+                    printf("Invalid entry!\nTry again\nYou can only allowed to write (");
+                    printf("'%s'",shortlist[0]);
+                    for(int i = 1; i < count; i++){
+                        printf(", '%s'", shortlist[i]);
+                    }
+                    printf(")\n");
                     j--;
                 }
                 else{
-                    if(givenPointsShortlist[point -1] == 0){
-                        shortlistPoints[j] += point;
-                        givenPointsShortlist[point - 1] = 1;
-                    }else{
-                        printf("You can not give a point more than once..\nTry again\n");
+                    if(prefShortlistIndx[indx1] == 0){
+                        for(int k = 0; k < count; k++){
+                            const char *shortlistFoodName = shortlist[k];
+                            if(strcmp(shortlistFoodName,foodName) == 0){
+                                shortlistPoints[k] += (count - j);
+                                prefShortlistIndx[k] = 1;
+                            }
+                        }
+                    }
+                    else{
+                        printf("You are not allowed to write a food more than one times!\n");
                         j--;
-                    } 
-                }       
+                    }
+                }
             }
-            for(int i = 0; i < count; i++){
-                givenPointsShortlist[i] = 0;
+            for(int p = 0; p < count; p++){
+                prefShortlistIndx[p] = 0;
             }
-            printf("Thanks..\n\n");
+            printf("\nThanks..\n\n");
         }
     
         int maxShortlistPoint = shortlistPoints[0];
